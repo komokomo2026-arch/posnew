@@ -361,6 +361,41 @@ html.ekb-subscription-locked #subscriptionGate{display:flex}
 #subscriptionGate button:disabled{opacity:.55}
 #gateMessage{display:none;margin-top:14px;padding:11px;border-radius:8px;white-space:pre-line;font-size:13px;line-height:1.5}
 #gateMessage.info{display:block;background:#dbeafe;color:#1e40af}#gateMessage.error{display:block;background:#fee2e2;color:#991b1b}#gateMessage.success{display:block;background:#dcfce7;color:#166534}
+
+/* ════════ NEW PAGES (Subscription / Supply Record / Analysis / Printer) ════════ */
+.pg-back{display:inline-flex;align-items:center;gap:6px;width:auto;min-height:34px;margin:0 0 8px;padding:6px 12px;background:#e8f5ee;color:#06683a;font-size:12px}
+.pg-back:hover:not(:disabled){background:#d6eee1}
+.sub-ro{background:#f1f5f9;font-weight:700}
+#subRemainingCard{display:inline-block;min-width:130px;padding:10px 16px;border-radius:14px;background:#e8f5ee;color:#06683a;margin:8px 0}
+#subRemainingCard b{display:block;font-size:26px;line-height:1.1}
+#subRemainingCard span{font-size:11px;font-weight:600}
+#subRemainingCard.sub-low{background:#fef3c7;color:#92400e}
+#subRemainingCard.sub-off{background:#fee2e2;color:#991b1b}
+.sub-line{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;margin-top:8px;border:1px solid var(--line);border-radius:12px;font-size:13px}
+.sub-line span{color:var(--muted);font-weight:600}.sub-line b{font-weight:700}
+.sr-row{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;margin-top:8px}
+.sr-row>input,.sr-row>select{flex:1 1 0;min-width:0;width:auto;margin-top:0}
+.sr-row>button{margin-top:0;width:auto;flex:0 0 auto;min-height:44px;padding:0 14px}
+.sr-row>button.sr-icon{width:44px;padding:0;display:flex;align-items:center;justify-content:center}
+.sr-row .sr-edit{background:#2563eb}.sr-row .sr-del{background:#ef4444}
+@media (max-width:340px){.sr-row.sr-wrapnarrow{flex-wrap:wrap}.sr-row.sr-wrapnarrow>select{flex:1 1 100%}}
+.sr-hint{font-size:11px;color:var(--muted);margin-top:6px}
+.sr-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.sr-cards .stat-card{text-align:left}
+.sr-chip{display:inline-block;margin:3px 4px 0 0;padding:3px 9px;border-radius:999px;background:#f1f5f9;font-size:11px;font-weight:600;color:var(--muted)}
+.sr-chip.on{background:var(--primary);color:#fff}
+.an-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 0}
+@media (min-width:700px){.an-grid{grid-template-columns:repeat(4,1fr)}}
+.an-grid .stat-card{text-align:left}
+.an-badge{display:inline-block;margin-top:2px;padding:1px 8px;border-radius:999px;font-size:10px;font-weight:700;background:#f1f5f9;color:#475569}
+.an-top{background:#dcfce7;color:#166534}.an-regular{background:#dbeafe;color:#1e40af}.an-low{background:#fef3c7;color:#92400e}.an-very{background:#fee2e2;color:#991b1b}
+#anChart{max-height:420px;overflow:auto;padding-right:4px}
+.an-bar-row{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:12px}
+.an-bar-name{flex:0 0 32%;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.an-bar-track{flex:1;background:#f1f5f9;border-radius:6px;height:16px;overflow:hidden}
+.an-bar{height:100%;border-radius:6px}
+.an-f-top{background:#16a34a}.an-f-regular{background:#2563eb}.an-f-low{background:#d97706}.an-f-very{background:#dc2626}
+.an-bar-val{flex:0 0 46px;text-align:right;font-weight:700}
 </style>
 
 <script>
@@ -426,6 +461,9 @@ html.ekb-subscription-locked #subscriptionGate{display:flex}
             <div class="qa-item" onclick="showView('purchaseView')"><i class="fas fa-box"></i>Stock</div>
             <div class="qa-item" onclick="showView('reportView')"><i class="fas fa-chart-pie"></i>Reports</div>
             <div class="qa-item" onclick="showView('backupView')"><i class="fas fa-cloud-arrow-up"></i>Back Up</div>
+            <div class="qa-item" onclick="showView('subscriptionView')"><i class="fas fa-id-card"></i>Subscription</div>
+            <div class="qa-item" onclick="showView('supplyView')"><i class="fas fa-truck-ramp-box"></i>Supply Record</div>
+            <div class="qa-item" onclick="showView('analysisView')"><i class="fas fa-chart-column"></i>Analysis</div>
           </div>
           <button onclick="showView('salesView')">
             <i class="fas fa-plus"></i> New Sale
@@ -548,6 +586,92 @@ html.ekb-subscription-locked #subscriptionGate{display:flex}
         </div>
       </div>
 
+      <!-- SUBSCRIPTION (Home → Subscription) -->
+      <div id="subscriptionView" class="view">
+        <div class="card">
+          <button class="pg-back" onclick="showView('homeView')"><i class="fas fa-arrow-left"></i> Home</button>
+          <div class="page-title"><i class="fas fa-id-card"></i> Subscription</div>
+          <label class="lbl" for="subDeviceId">Device ID</label>
+          <input type="text" id="subDeviceId" class="sub-ro" readonly aria-readonly="true">
+          <div id="subRemainingCard"><b id="subRemaining">0</b><span>Remaining active days</span></div>
+          <div class="sub-line"><span>Start Date</span><b id="subStart">—</b></div>
+          <div class="sub-line"><span>End Date</span><b id="subEnd">—</b></div>
+          <label class="lbl" for="subRenewalCode">Renewal Code</label>
+          <input type="text" id="subRenewalCode" autocomplete="off" autocapitalize="characters" placeholder="Enter Renewal Code">
+          <button id="subRenewBtn" onclick="subPageRenew()" style="margin-top:12px"><i class="fas fa-rotate"></i> Renew</button>
+          <p class="sr-hint">Status: <span id="subStatusLine">—</span>. Remaining days are kept: a new code adds its days to what is left.</p>
+        </div>
+      </div>
+
+      <!-- SUPPLY RECORD (Home → Supply Record) -->
+      <div id="supplyView" class="view">
+        <div class="card">
+          <button class="pg-back" onclick="showView('homeView')"><i class="fas fa-arrow-left"></i> Home</button>
+          <div class="page-title"><i class="fas fa-truck-ramp-box"></i> Supply Record</div>
+          <p class="page-sub">Supply names are optional. Incoming stock is recorded automatically when you add or increase stock.</p>
+          <label class="lbl" style="margin-top:0">Supply Name</label>
+          <div class="sr-row">
+            <input type="text" id="srNameInput" placeholder="Supply name" maxlength="80" onkeydown="if(event.key==='Enter')saveSupplyName()">
+            <button id="srSaveBtn" onclick="saveSupplyName()"><i class="fas fa-save"></i> Save</button>
+          </div>
+          <label class="lbl">Saved Supply Names</label>
+          <div class="sr-row sr-wrapnarrow">
+            <select id="srNameSelect"><option value="">— No supply name —</option></select>
+            <button class="sr-icon sr-edit" onclick="editSupplyName()" title="Edit supply name" aria-label="Edit supply name"><i class="fas fa-pen"></i></button>
+            <button class="sr-icon sr-del" onclick="deleteSupplyName()" title="Delete supply name" aria-label="Delete supply name"><i class="fas fa-trash"></i></button>
+            <button onclick="confirmSupplyName()" title="Confirm selected supply name">Confirm</button>
+          </div>
+          <div class="sr-hint" id="srActive"></div>
+        </div>
+        <div class="card">
+          <div class="flex">
+            <select id="srMonth" onchange="supplyRefresh()"></select>
+            <select id="srYear" onchange="supplyRefresh()"></select>
+          </div>
+          <div class="sr-cards">
+            <div class="stat-card blue">Monthly total<br><strong>KSH <span id="srMonthTotal">0</span></strong><small id="srMonthLabel"></small></div>
+            <div class="stat-card green">Yearly total<br><strong>KSH <span id="srYearTotal">0</span></strong><small id="srYearLabel"></small></div>
+          </div>
+          <div id="srMonthsList"></div>
+        </div>
+        <div class="card">
+          <div id="srList"></div>
+          <button id="srMore" onclick="supplyShowMore()" style="display:none;margin-top:8px;background:#64748b">Show more days</button>
+        </div>
+      </div>
+
+      <!-- ANALYSIS (Home → Analysis) -->
+      <div id="analysisView" class="view">
+        <div class="card">
+          <button class="pg-back" onclick="showView('homeView')"><i class="fas fa-arrow-left"></i> Home</button>
+          <div class="page-title"><i class="fas fa-chart-column"></i> Analysis</div>
+          <div class="flex">
+            <select id="anYear" onchange="analysisRun()"></select>
+            <select id="anMonth" onchange="analysisRun()"></select>
+          </div>
+          <div class="an-grid">
+            <div class="stat-card blue">Total products sold<br><strong id="anTotQty">0</strong></div>
+            <div class="stat-card green">Total sales<br><strong>KSH <span id="anTotSales">0</span></strong></div>
+            <div class="stat-card orange">Total profit<br><strong>KSH <span id="anTotProfit">0</span></strong></div>
+            <div class="stat-card blue">Different products<br><strong id="anTotProducts">0</strong></div>
+          </div>
+          <p class="sr-hint" id="anNote"></p>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:6px">Sales performance</h3>
+          <div id="anChart"></div>
+        </div>
+        <div class="card">
+          <div style="overflow-x:auto">
+            <table>
+              <thead><tr><th>Item Name</th><th>Qty</th><th>Total Sales</th><th>Profit</th><th>Percentage</th></tr></thead>
+              <tbody id="anBody"></tbody>
+            </table>
+          </div>
+          <p class="sr-hint">Ranked by quantity sold. Top selling = top 20% of products, Regular = next 30%, Low selling = next 30%, Very low = the rest. Profit uses the cost recorded at the time of each sale.</p>
+        </div>
+      </div>
+
       <!-- BUSINESS SETTINGS (More → Business Settings) -->
       <div id="bizView" class="view">
         <div class="card">
@@ -562,7 +686,22 @@ html.ekb-subscription-locked #subscriptionGate{display:flex}
             <i class="fas fa-save"></i> Save Settings
           </button>
         </div>
-      </div>
+        <div class="card">
+          <h3 style="margin-bottom:10px">Printer</h3>
+          <label class="lbl" style="margin-top:0">Paper size</label>
+          <select id="ptPaper"><option value="A4">A4 / standard sheet (existing layout)</option><option value="58">Thermal receipt 58mm</option><option value="80">Thermal receipt 80mm</option><option value="A5">A5</option><option value="Letter">Letter</option></select>
+          <label class="lbl">Print method</label>
+          <select id="ptMethod" onchange="ptStatus()"><option value="browser">Print dialog (any printer)</option><option value="bluetooth">Direct Bluetooth thermal (ESC/POS)</option><option value="usb">Direct USB thermal (ESC/POS)</option></select>
+          <label class="lbl" style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="ptAuto" style="width:auto;margin:0" checked> Print automatically after a sale</label>
+          <p class="sr-hint" id="ptStatus"></p>
+          <div class="flex" style="margin-top:8px">
+            <button id="ptConnectBtn" onclick="ptConnect()" style="display:none;background:#0f172a">Connect</button>
+            <button onclick="ptTest()" style="background:#64748b">Test print</button>
+          </div>
+          <button onclick="ptSave()" style="margin-top:6px"><i class="fas fa-save"></i> Save printer settings</button>
+          <p class="sr-hint">Direct Bluetooth/USB printing needs Chrome or Edge and a printer that accepts ESC/POS. If it is unavailable the print dialog is used.</p>
+        </div>
+      </div><!-- /bizView -->
 
       <!-- ABOUT US -->
       <div id="aboutView" class="view">
@@ -722,6 +861,7 @@ html.ekb-subscription-locked #subscriptionGate{display:flex}
       <div style="flex:1"><label>Stock Qty *</label><input type="number" id="stockQty" placeholder="Stock"></div>
       <div style="flex:1"><label>Min Stock</label><input type="number" id="minStock" placeholder="Min Stock"></div>
     </div>
+    <div id="itemSupplyHint" class="sr-hint" style="display:none"></div>
     <button id="btnSaveItem" onclick="saveItem()" style="margin-top:10px"><i class="fas fa-save"></i> Save</button>
     <button onclick="closeModal()" style="background:#ef4444;margin-top:6px"><i class="fas fa-times"></i> Cancel</button>
   </div>
@@ -792,7 +932,7 @@ var VIDEO_GUIDE_URL = '';   // e.g. 'https://www.youtube.com/watch?v=XXXXXXXXXXX
 var CONTACT_WHATSAPP_NUMBER = '';   // Contact Us button,  e.g. '254712345678'
 var UPGRADE_WHATSAPP_NUMBER = '';
 // Paste the deployed Google Apps Script Web App URL ending in /exec.
-var SUBSCRIPTION_API_URL = 'https://script.google.com/macros/s/AKfycbygf28HmWEkahhistu9uuRh9qrSW6bULqEsBaUWlxm6jtJvtjsfBRVK0nS8IwTdvsiUMg/exec';   // Upgrade form button, e.g. '254712345678'
+var SUBSCRIPTION_API_URL = 'https://script.google.com/macros/s/AKfycbzezROsOB7TkDvUtU0ViSuOyX-syB9sIX0FAOND50VVJt7DvabYpR8sJwMNXmu8SXtx/exec';   // Upgrade form button, e.g. '254712345678'
 /* ═══════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════
@@ -831,9 +971,206 @@ function ekbDeviceId(){return String(window.EKAMBANI_DEVICE_ID||'').trim()}
 function ekbGateMessage(t,c){let e=document.getElementById('gateMessage');if(e){e.textContent=t||'';e.className=c||'info'}let d=document.getElementById('gateDeviceId');if(d)d.value=ekbDeviceId();let r=document.getElementById('gateRetryButton');if(r)r.style.display='block'}
 function ekbGateBusy(v,label){let b=document.getElementById('gateRenewButton');if(b){b.disabled=!!v||!ekbDeviceId();b.textContent=v?(label||'Please wait...'):'Renew Subscription'}}
 function ekbApi(action,extra){return new Promise((resolve,reject)=>{let url=String(SUBSCRIPTION_API_URL||'').trim();if(!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/i.test(url)){reject(Error('Set SUBSCRIPTION_API_URL to your deployed Apps Script /exec URL.'));return}let cb='__ekbCallback'+(++_ekbSubSequence),q=new URLSearchParams({action:action,callback:cb,deviceId:ekbDeviceId(),_ :String(Date.now())});Object.keys(extra||{}).forEach(k=>q.set(k,String(extra[k])));let s=document.createElement('script'),done=false,t=setTimeout(()=>finish(Error('Apps Script response timed out. Check internet, deployment access and URL, then Retry.')),10000);function clean(){clearTimeout(t);try{delete window[cb]}catch(e){window[cb]=undefined}if(s.parentNode)s.parentNode.removeChild(s)}function finish(e,v){if(done)return;done=true;clean();e?reject(e):resolve(v)}window[cb]=v=>finish(null,v);s.onerror=()=>finish(Error('Cannot reach Apps Script. Deploy as Web App with access Anyone and verify the /exec URL.'));s.src=url+'?'+q.toString();document.head.appendChild(s)})}
-async function startSubscriptionGate(){if(_ekbSubBusy)return;_ekbSubBusy=true;ekbGateBusy(true,'Checking...');try{if(!ekbDeviceId())throw Error('Browser storage is blocked. Enable site storage and reload.');if(!navigator.onLine)throw Error('Internet is required to register and verify subscription. POS remains locked.');ekbGateMessage('Registering Device ID and checking subscription...','info');let r=await ekbApi('register',{});if(!r||!r.ok)throw Error(r&&r.message||'Device registration failed.');if(r.subscriptionStatus==='active'){document.documentElement.classList.remove('ekb-subscription-locked');let g=document.getElementById('subscriptionGate');if(g)g.style.display='none';_ekbSubBusy=false;ekbGateBusy(false);await bootApp();return}ekbGateMessage('Device registered. Enter a valid Renewal Code to activate or renew your subscription.','info')}catch(e){ekbGateMessage(e.message||'Subscription check failed.','error')}finally{_ekbSubBusy=false;ekbGateBusy(false)}}
-function retrySubscriptionCheck(){startSubscriptionGate()}
-async function submitGateRenewal(){if(_ekbSubBusy)return;let input=document.getElementById('gateRenewalCode'),code=input?input.value.trim():'';if(!code){ekbGateMessage('Enter your Renewal Code.','error');if(input)input.focus();return}if(!navigator.onLine){ekbGateMessage('Internet is required to redeem a Renewal Code.','error');return}_ekbSubBusy=true;ekbGateBusy(true,'Renewing...');ekbGateMessage('Validating Renewal Code...','info');try{let r=await ekbApi('redeem',{renewalCode:code});if(!r||!r.ok||!r.status)throw Error(r&&r.message||'Renewal failed.');let s=await ekbApi('status',{});if(!s||!s.ok||s.subscriptionStatus!=='active')throw Error(s&&s.message||'Renewal saved but active access was not confirmed. Tap Retry.');if(input)input.value='';document.documentElement.classList.remove('ekb-subscription-locked');let g=document.getElementById('subscriptionGate');if(g)g.style.display='none';_ekbSubBusy=false;ekbGateBusy(false);await bootApp()}catch(e){ekbGateMessage(e.message||'Renewal failed.','error')}finally{_ekbSubBusy=false;ekbGateBusy(false)}}
+/* ── Subscription state (local copy of the server record) ──
+   The server (Apps Script + Subscriptions sheet) stays the source of truth. A signed local copy lets the POS keep working
+   offline while the subscription is valid, and keeps it locked offline once it has expired.
+   Honest limit: a browser-only app cannot be tamper-proof against someone who controls the device. The checks below stop
+   casual bypasses (going offline, refreshing, reopening, setting the clock back, editing the stored dates by hand);
+   the server check on every online start-up is what really enforces the subscription. */
+const EKB_SUB_KEY = 'ekambani_pos_sub_state_v2';
+let ekbSub = null, _ekbBootPromise = null, _ekbTicker = null, _ekbWarnedDay = '', _ekbLastServerCheck = 0;
+
+function ekbHash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h.toString(36); }
+function ekbSig(o) { return ekbHash([o.deviceId, o.startDate, o.endDate, o.maxSeen, 'ekb-sub-v2'].join('|')); }
+function ekbLoadSub() {
+  try {
+    const raw = localStorage.getItem(EKB_SUB_KEY); if (!raw) return null;
+    const o = JSON.parse(raw);
+    if (!o || o.deviceId !== ekbDeviceId() || o.sig !== ekbSig(o)) return null;   // missing, copied from another device, or edited
+    return o;
+  } catch (e) { return null; }
+}
+function ekbStoreSub(o) {
+  o.sig = ekbSig(o); ekbSub = o;
+  try { localStorage.setItem(EKB_SUB_KEY, JSON.stringify(o)); } catch (e) { console.warn('Could not store subscription state', e); }
+}
+function ekbYmdToMs(s) { const p = String(s || '').split('-').map(Number); return p.length === 3 && p[0] ? new Date(p[0], p[1] - 1, p[2], 0, 0, 0).getTime() : 0; }
+/* Save a server answer. The "latest time ever seen" only moves forward, so setting the clock back cannot extend access. */
+function ekbApplyServer(r) {
+  const prev = ekbSub || {};
+  let seen = Math.max(Date.now(), Number(prev.maxSeen) || 0, ekbYmdToMs(r.serverDate));
+  ekbStoreSub({ deviceId: ekbDeviceId(), startDate: r.startDate || '', endDate: r.endDate || '', verifiedAt: Date.now(), maxSeen: seen });
+  _ekbLastServerCheck = Date.now();
+}
+function ekbNow() { return Math.max(Date.now(), (ekbSub && Number(ekbSub.maxSeen)) || 0); }
+function ekbToday() { return getLocalDateStr(new Date(ekbNow())); }
+function ekbIsActive() {
+  const s = ekbSub; if (!s || !s.startDate || !s.endDate) return false;
+  if (s.startDate === s.endDate) return false;               // registered, never activated
+  return s.endDate >= ekbToday();
+}
+function ekbRemainingDays() {
+  if (!ekbIsActive()) return 0;
+  return Math.max(0, Math.round((ekbYmdToMs(ekbSub.endDate) - ekbYmdToMs(ekbToday())) / 86400000));
+}
+function ekbTouchClock() {                                      // remember the latest time seen (anti clock-rollback)
+  if (!ekbSub) return;
+  const now = Date.now();
+  if (now > (Number(ekbSub.maxSeen) || 0) + 20000) { ekbStoreSub(Object.assign({}, ekbSub, { maxSeen: now })); }
+}
+
+function ekbShowGate(msg, cls) {
+  document.documentElement.classList.add('ekb-subscription-locked');
+  const g = document.getElementById('subscriptionGate'); if (g) g.style.display = '';
+  ekbGateMessage(msg, cls || 'info');
+  ekbGateBusy(false);
+}
+function ekbBootOnce() {
+  if (!_ekbBootPromise) _ekbBootPromise = bootApp().catch(function(e) { _ekbBootPromise = null; throw e; });
+  return _ekbBootPromise;
+}
+async function ekbUnlock() {
+  document.documentElement.classList.remove('ekb-subscription-locked');
+  const g = document.getElementById('subscriptionGate'); if (g) g.style.display = 'none';
+  _ekbSubBusy = false; ekbGateBusy(false);
+  await ekbBootOnce();
+  ekbStartTicker();
+  ekbMaybeWarn();
+  if (typeof renderSubscriptionPage === 'function' && $('#subscriptionView').hasClass('active')) renderSubscriptionPage();
+}
+function ekbStartTicker() {
+  if (_ekbTicker) return;
+  _ekbTicker = setInterval(ekbTick, 30000);
+  document.addEventListener('visibilitychange', function() { if (!document.hidden) ekbTick(); });
+  window.addEventListener('online', function() { ekbBackgroundRefresh(); });
+}
+function ekbTick() {
+  ekbTouchClock();
+  if (!ekbIsActive()) { ekbShowGate('Your subscription has expired. Enter a valid unused Renewal Code to continue.', 'error'); return; }
+  ekbMaybeWarn();
+  if (navigator.onLine && Date.now() - _ekbLastServerCheck > 6 * 3600 * 1000) ekbBackgroundRefresh();
+}
+/* Quietly re-check the server when online; the server answer replaces the local copy (lock or unlock accordingly). */
+async function ekbBackgroundRefresh() {
+  if (!navigator.onLine || !ekbDeviceId() || _ekbSubBusy) return;
+  try {
+    const r = await ekbApi('status', {});
+    if (!r || !r.ok) return;
+    ekbApplyServer(r);
+    if (!ekbIsActive()) ekbShowGate('Your subscription has expired. Enter a valid unused Renewal Code to continue.', 'error');
+    else if ($('#subscriptionView').hasClass('active')) renderSubscriptionPage();
+  } catch (e) { /* offline or server busy: keep using the stored state */ }
+}
+/* Small bottom toast when fewer than 3 days remain: once per calendar day, never repeatedly. */
+function ekbMaybeWarn() {
+  if (!ekbIsActive()) return;
+  const left = ekbRemainingDays(); if (left >= 3) return;
+  const day = ekbToday(); if (_ekbWarnedDay === day) return;
+  let stored = ''; try { stored = localStorage.getItem('ekambani_pos_sub_warned') || ''; } catch (e) {}
+  if (stored === day) { _ekbWarnedDay = day; return; }
+  _ekbWarnedDay = day; try { localStorage.setItem('ekambani_pos_sub_warned', day); } catch (e) {}
+  const c = document.getElementById('toastContainer'); if (!c) return;
+  const t = document.createElement('div'); t.className = 'toast warning';
+  t.innerHTML = '<i class="fas fa-triangle-exclamation"></i> <span style="flex:1">Subscription ends ' + (left === 0 ? 'today' : 'in ' + left + ' day' + (left === 1 ? '' : 's')) + '.</span>' +
+    '<button type="button" style="width:auto;min-height:30px;margin:0;padding:4px 10px;font-size:12px;background:rgba(255,255,255,.25)">Open</button>';
+  t.querySelector('button').onclick = function() { t.remove(); showView('subscriptionView'); };
+  c.appendChild(t);
+  setTimeout(function() { t.classList.add('hiding'); setTimeout(function() { t.remove(); }, 350); }, 9000);
+}
+
+async function startSubscriptionGate() {
+  if (_ekbSubBusy) return; _ekbSubBusy = true; ekbGateBusy(true, 'Checking...');
+  try {
+    if (!ekbDeviceId()) throw Error('Browser storage is blocked. Enable site storage and reload.');
+    ekbSub = ekbLoadSub();
+    if (ekbIsActive()) {                                        // valid subscription: works offline, no internet needed
+      await ekbUnlock();
+      ekbBackgroundRefresh();
+      return;
+    }
+    if (!navigator.onLine) {
+      ekbShowGate(ekbSub ? 'Your subscription has expired. Connect to the internet and enter a valid Renewal Code. POS stays locked.' : 'Internet is required the first time to register this device and verify the subscription. POS stays locked.', 'error');
+      return;
+    }
+    ekbGateMessage('Registering Device ID and checking subscription...', 'info');
+    const r = await ekbApi('register', {});
+    if (!r || !r.ok) throw Error(r && r.message || 'Device registration failed.');
+    ekbApplyServer(r);
+    if (ekbIsActive()) { await ekbUnlock(); return; }
+    ekbShowGate('Device registered. Enter a valid Renewal Code to activate or renew your subscription.', 'info');
+  } catch (e) {
+    if (ekbIsActive()) { try { await ekbUnlock(); return; } catch (e2) {} }
+    ekbShowGate(e.message || 'Subscription check failed.', 'error');
+  } finally { _ekbSubBusy = false; ekbGateBusy(false); }
+}
+function retrySubscriptionCheck() { startSubscriptionGate(); }
+
+/* Redeem a code on the server, then confirm with a fresh status. If the reply is lost (timeout) the status is re-read, so a code
+   that was actually consumed is never reported as a failure. Returns the confirmed server status. */
+async function ekbRedeem(code) {
+  if (!navigator.onLine) throw Error('Internet is required to redeem a Renewal Code.');
+  const prevEnd = ekbSub ? ekbSub.endDate : '';
+  let r = null, err = null;
+  try { r = await ekbApi('redeem', { renewalCode: code }); } catch (e) { err = e; }
+  if (r && r.ok === false || (r && !r.status && r.message)) throw Error(r.message || 'Renewal failed.');
+  if (err || !r) {                                              // no clear answer: ask the server what happened
+    let s = null; try { s = await ekbApi('status', {}); } catch (e) {}
+    if (s && s.ok && s.subscriptionStatus === 'active' && s.endDate && s.endDate !== prevEnd) { ekbApplyServer(s); return s; }
+    throw err || Error('Renewal failed.');
+  }
+  const s = await ekbApi('status', {});
+  if (!s || !s.ok || s.subscriptionStatus !== 'active') throw Error(s && s.message || 'Renewal saved but active access was not confirmed. Tap Retry.');
+  ekbApplyServer(s);
+  s.addedDays = r.addedDays;
+  return s;
+}
+
+async function submitGateRenewal() {
+  if (_ekbSubBusy) return;
+  const input = document.getElementById('gateRenewalCode'), code = input ? input.value.trim() : '';
+  if (!code) { ekbGateMessage('Enter your Renewal Code.', 'error'); if (input) input.focus(); return; }
+  if (!navigator.onLine) { ekbGateMessage('Internet is required to redeem a Renewal Code.', 'error'); return; }
+  _ekbSubBusy = true; ekbGateBusy(true, 'Renewing...'); ekbGateMessage('Validating Renewal Code...', 'info');
+  try {
+    await ekbRedeem(code);
+    if (input) input.value = '';
+    await ekbUnlock();
+    toast('Subscription renewed. POS unlocked.', 'success');
+  } catch (e) { ekbGateMessage(e.message || 'Renewal failed.', 'error'); }
+  finally { _ekbSubBusy = false; ekbGateBusy(false); }
+}
+
+/* ── Subscription page (Home → Subscription) ── */
+async function renderSubscriptionPage() {
+  const paint = function() {
+    $('#subDeviceId').val(ekbDeviceId());
+    $('#subRemaining').text(ekbIsActive() ? ekbRemainingDays() : 0);
+    $('#subStart').text(ekbSub && ekbSub.startDate && ekbSub.startDate !== ekbSub.endDate ? ekbSub.startDate : '—');
+    $('#subEnd').text(ekbSub && ekbSub.endDate && ekbSub.startDate !== ekbSub.endDate ? ekbSub.endDate : '—');
+    $('#subStatusLine').text(ekbIsActive() ? 'Active' : 'Expired');
+    $('#subRemainingCard').toggleClass('sub-low', ekbIsActive() && ekbRemainingDays() < 3).toggleClass('sub-off', !ekbIsActive());
+  };
+  paint();
+  if (navigator.onLine && ekbDeviceId()) {
+    try { const r = await ekbApi('status', {}); if (r && r.ok) { ekbApplyServer(r); paint(); } } catch (e) { /* keep stored state */ }
+  }
+}
+async function subPageRenew() {
+  if (_ekbSubBusy) return;
+  const input = document.getElementById('subRenewalCode'), code = input ? input.value.trim() : '';
+  if (!code) { toast('Enter your Renewal Code.', 'warning'); if (input) input.focus(); return; }
+  if (!navigator.onLine) { toast('Internet is required to redeem a Renewal Code.', 'error', 5000); return; }
+  _ekbSubBusy = true; btnLoad('subRenewBtn', 'Renewing...');
+  try {
+    const s = await ekbRedeem(code);
+    if (input) input.value = '';
+    renderSubscriptionPage();
+    document.documentElement.classList.remove('ekb-subscription-locked');
+    toast('Renewed' + (s.addedDays ? ' (+' + s.addedDays + ' days)' : '') + '. ' + ekbRemainingDays() + ' days remaining.', 'success', 5000);
+  } catch (e) { toast(e.message || 'Renewal failed.', 'error', 6000); }
+  finally { _ekbSubBusy = false; btnReset('subRenewBtn'); }
+}
+
 
 /* ═══════════════════════════════════════
    STATE
@@ -892,8 +1229,9 @@ function fmtDate(ts) { return ts ? new Date(ts).toLocaleDateString() : ''; }
    INDEXEDDB LAYER
 ═══════════════════════════════════════ */
 const DB_NAME = 'EkambaniPOS';
-const DB_VERSION = 1;
-const DB_STORES = ['items', 'sales', 'customers', 'settings'];
+const DB_VERSION = 2;   // v2 adds the 'supplyNames' and 'supplies' stores (added safely on top of existing data)
+const DB_CORE_STORES = ['items', 'sales', 'customers', 'settings'];
+const DB_STORES = ['items', 'sales', 'customers', 'settings', 'supplyNames', 'supplies'];
 let db = null;
 let _dbInit = null;                 // single shared init promise (prevents duplicate/racing init)
 let _saleBusy = false, _itemBusy = false;   // double-click / retry guards
@@ -916,6 +1254,16 @@ function createStores(d) {
   }
   if (!d.objectStoreNames.contains('settings')) {
     d.createObjectStore('settings', { keyPath: 'key' });
+  }
+  if (!d.objectStoreNames.contains('supplyNames')) {
+    const s = d.createObjectStore('supplyNames', { keyPath: 'id' });
+    s.createIndex('key', 'key', { unique: false });
+  }
+  if (!d.objectStoreNames.contains('supplies')) {
+    const s = d.createObjectStore('supplies', { keyPath: 'id' });
+    s.createIndex('date', 'date', { unique: false });
+    s.createIndex('supplyName', 'supplyName', { unique: false });
+    s.createIndex('itemId', 'itemId', { unique: false });
   }
 }
 
@@ -1020,7 +1368,7 @@ async function dbGetItems() {
 function dbSaveItem(d) {
   return new Promise(function(resolve, reject) {
     let result = { success: true };
-    const tx = dbTx('items', 'readwrite'), st = tx.objectStore('items');
+    const tx = dbTx(['items', 'supplies'], 'readwrite'), st = tx.objectStore('items'), supSt = tx.objectStore('supplies');
     tx.oncomplete = function() { resolve(result); };
     tx.onerror    = function() { reject(tx.error); };
     tx.onabort    = function() { if (result && result.error) resolve(result); else reject(tx.error || new Error('Transaction aborted')); };
@@ -1032,19 +1380,36 @@ function dbSaveItem(d) {
         if (dup) { result = { error: true, message: 'Barcode already used by "' + dup.itemName + '".' }; try { tx.abort(); } catch(e) {} return; }
       }
       const existing = d.id ? items.find(i => i.id === d.id) : null;
+      if (!d.id) {   // brand-new product: block accidental duplicate registrations (names compared ignoring case / extra spaces)
+        const nk = normName(d.itemName), dupN = items.find(i => normName(i.itemName) === nk);
+        if (dupN) { result = { error: true, message: '"' + dupN.itemName + '" is already registered. Edit it to add stock.' }; try { tx.abort(); } catch(e) {} return; }
+      }
       let cost = Number(d.costPrice);
       if (d.newCostPrice !== undefined && d.newCostPrice !== null && d.newCostPrice !== '') {
         const ncp = Number(d.newCostPrice);
         if (!isNaN(ncp) && ncp > 0) cost = ncp;
       }
+      const itemId = d.id || uuid();
       st.put({
-        id: d.id || uuid(),
+        id: itemId,
         itemName: d.itemName, category: d.category, barcode: barcode,
         costPrice: cost, sellPrice: Number(d.sellPrice),
         stock: Number(d.stock), minStock: Number(d.minStock) || 0,
         date: Date.now(), created: existing ? (existing.created || existing.date) : Date.now(),
         newCostPrice: ''
       });
+      /* Incoming stock = new quantity - previous quantity (new product: opening stock). Same transaction as the item save,
+         so the item and its supply record are stored together or not at all. Nothing is recorded when stock does not increase. */
+      const prevStock = existing ? Number(existing.stock) : 0, newStock = Number(d.stock);
+      const incoming = Math.round((newStock - (isFinite(prevStock) ? prevStock : 0)) * 1e6) / 1e6;
+      if (isFinite(incoming) && incoming > 0 && isFinite(cost) && cost >= 0) {
+        supSt.put({
+          id: uuid(), itemId: itemId, itemName: d.itemName, qty: incoming, costPrice: cost,
+          total: Math.round(incoming * cost * 100) / 100, date: getLocalDateStr(new Date()), ts: Date.now(),
+          supplyName: (activeSupply && activeSupply.name) || '', supplyId: (activeSupply && activeSupply.id) || '',
+          source: existing ? 'stock-increase' : 'opening-stock', prevStock: isFinite(prevStock) ? prevStock : 0, newStock: newStock, bizId: ekbBizId()
+        });
+      }
     };
   });
 }
@@ -1175,19 +1540,24 @@ async function dbReport(month, year, itemId, salesByFilter) {
 const VIEW_TITLES = {
   homeView:'Home', purchaseView:'Purchase', salesView:'Sales', reportView:'Reports',
   bizView:'Business Settings', aboutView:'About Us', privacyView:'Privacy Policy',
-  contactView:'Contact Us', upgradeView:'Upgrade', backupView:'Back Up'
+  contactView:'Contact Us', upgradeView:'Upgrade', backupView:'Back Up',
+  subscriptionView:'Subscription', supplyView:'Supply Record', analysisView:'Analysis'
 };
+const HOME_SUBVIEWS = ['subscriptionView','supplyView','analysisView'];
 const MORE_VIEWS = ['bizView','aboutView','privacyView','contactView','upgradeView','backupView'];
 
 function showView(id) {
   closeMore();
   $('.view').removeClass('active');
   $('#' + id).addClass('active');
-  const navKey = MORE_VIEWS.indexOf(id) !== -1 ? 'more' : id;
+  const navKey = MORE_VIEWS.indexOf(id) !== -1 ? 'more' : (HOME_SUBVIEWS.indexOf(id) !== -1 ? 'homeView' : id);
   $('.nav-item,.sidebar-nav-item').removeClass('active');
   $('[data-view="' + navKey + '"]').addClass('active');
   $('#desktopViewTitle').text(VIEW_TITLES[id] || '');
-  if (id === 'bizView') fillBizForm();
+  if (id === 'bizView') { fillBizForm(); ptFillUi(); }
+  if (id === 'subscriptionView') renderSubscriptionPage();
+  if (id === 'supplyView') supplyOpen();
+  if (id === 'analysisView') analysisOpen();
   if (id === 'backupView') { refreshBackupUI(); bkReloadState().then(function() { refreshBackupUI(); bkTrySilent(); }); }
   window.scrollTo({ top: 0 });
   $('.main-wrapper').scrollTop(0);
@@ -1277,6 +1647,7 @@ async function bootApp() {
   await loadInventory();
   runDashReport();
   fetchSalesRecords();
+  await newFeaturesInit();
   $('#saleItem').on('change', function() {
     const itm = inventory.find(x => x.id === $(this).val());
     if (itm) { $('#salePrice').val(itm.sellPrice); $('#saleQty').val(1); }
@@ -1504,7 +1875,7 @@ function completeSale() {
     if (res && res.error) { Swal.close(); toast(res.message, 'error', 5000); loadInventory(); return; }
     Swal.fire(wasEdit ? 'Updated!' : 'Sale Complete!', 'Invoice: ' + res.invoice, 'success');
     toast(wasEdit ? 'Sale updated successfully' : 'Sale completed & invoice ready', 'success');
-    printInvoice(res); resetSalesForm();
+    printInvoice(Object.assign({}, res, { __auto: true })); resetSalesForm();
     loadInventory(); runDashReport(); fetchSalesRecords();
   }).catch(err => {
     _saleBusy = false; btnReset('btnCompleteSale'); Swal.close();
@@ -2035,9 +2406,10 @@ async function bkSnapshot() {
 }
 function bkValidate(snap) {
   if (!snap || typeof snap !== 'object' || snap.app !== BK_APP_ID || !snap.stores) throw new Error('This is not a valid Ekambani backup.');
-  DB_STORES.forEach(function(n) { if (!Array.isArray(snap.stores[n])) throw new Error('Backup is incomplete (missing "' + n + '").'); });
-  ['items', 'sales', 'customers'].forEach(function(n) {
-    snap.stores[n].forEach(function(r) { if (!r || typeof r.id !== 'string' || !r.id) throw new Error('Backup contains a damaged record in "' + n + '".'); });
+  DB_CORE_STORES.forEach(function(n) { if (!Array.isArray(snap.stores[n])) throw new Error('Backup is incomplete (missing "' + n + '").'); });
+  DB_STORES.forEach(function(n) { if (snap.stores[n] !== undefined && !Array.isArray(snap.stores[n])) throw new Error('Backup contains a damaged "' + n + '" section.'); });   // newer stores are optional so older backups still restore
+  ['items', 'sales', 'customers', 'supplyNames', 'supplies'].forEach(function(n) {
+    (snap.stores[n] || []).forEach(function(r) { if (!r || typeof r.id !== 'string' || !r.id) throw new Error('Backup contains a damaged record in "' + n + '".'); });
   });
   snap.stores.settings.forEach(function(r) { if (!r || typeof r.key !== 'string' || !r.key) throw new Error('Backup contains a damaged settings record.'); });
   return true;
@@ -2048,7 +2420,8 @@ function bkApply(snap) {
     const tx = db.transaction(DB_STORES, 'readwrite');
     tx.oncomplete = function() { resolve(true); };
     tx.onerror = tx.onabort = function() { reject(tx.error || new Error('Restore failed; local data was not changed.')); };
-    ['items', 'sales', 'customers'].forEach(function(n) {
+    ['items', 'sales', 'customers', 'supplyNames', 'supplies'].forEach(function(n) {
+      if (!Array.isArray(snap.stores[n])) return;      // an older backup without this store leaves the local records untouched
       const s = tx.objectStore(n); s.clear();
       snap.stores[n].forEach(function(r) { s.put(r); });
     });
@@ -2287,6 +2660,465 @@ async function bkDisconnect() {
   dbSaveSale = function(d) { const p = _sale(d); p.then(function(r) { if (r && !r.error) markDirty(); }, function() {}); return p; };
   dbDeleteInvoice = function(inv) { const p = _inv(inv); p.then(markDirty, function() {}); return p; };
 })();
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   NEW FEATURES (additive): Supply Record, Analysis, printer support, external barcode scanners.
+   Uses the existing IndexedDB ('EkambaniPOS'); only adds two stores (supplyNames, supplies).
+═══════════════════════════════════════════════════════════════ */
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const money = function(n) { return Number(n || 0).toLocaleString(undefined, { maximumFractionDigits: 2 }); };
+function ekbBizId() { return ekbDeviceId(); }
+function normName(s) { return String(s || '').replace(/\s+/g, ' ').trim().toLowerCase(); }
+function cleanName(s) { return String(s || '').replace(/\s+/g, ' ').trim(); }
+function pad2(n) { return String(n).padStart(2, '0'); }
+function monthRange(y, m) { return IDBKeyRange.bound(y + '-' + pad2(+m + 1) + '-01', y + '-' + pad2(+m + 1) + '-31'); }
+function yearRange(y) { return IDBKeyRange.bound(y + '-01-01', y + '-12-31'); }
+
+/* Distinct years present in an object store's 'date' index (jumps year to year, never reads every record). */
+function distinctYears(store) {
+  return new Promise(function(resolve) {
+    const years = [];
+    try {
+      const req = dbTx(store, 'readonly').objectStore(store).index('date').openKeyCursor();
+      req.onsuccess = function() {
+        const c = req.result; if (!c) { resolve(years); return; }
+        const y = parseInt(String(c.key).slice(0, 4), 10);
+        if (y && years.indexOf(y) === -1) years.push(y);
+        c.continue(String(y + 1) + '-');
+      };
+      req.onerror = function() { resolve(years); };
+    } catch (e) { resolve(years); }
+  });
+}
+async function fillYearSelect(sel, store) {
+  const cy = new Date().getFullYear(), ys = await distinctYears(store);
+  if (ys.indexOf(cy) === -1) ys.push(cy);
+  ys.sort(function(a, b) { return b - a; });
+  const prev = $(sel).val();
+  $(sel).html(ys.map(function(y) { return '<option value="' + y + '">' + y + '</option>'; }).join(''));
+  $(sel).val(prev && ys.indexOf(+prev) !== -1 ? prev : String(cy));
+}
+function fillMonthSelect(sel) {
+  if ($(sel).children().length) return;
+  $(sel).html(MONTH_NAMES.map(function(m, i) { return '<option value="' + i + '">' + m + '</option>'; }).join('')).val(String(new Date().getMonth()));
+}
+
+async function newFeaturesInit() {
+  try { await supplyLoadSelection(); } catch (e) { console.warn(e); }
+  try { await ptLoadSettings(); } catch (e) { console.warn(e); }
+  try { ptTryReconnectUsb(); } catch (e) {}
+  try {
+    if (navigator.storage && navigator.storage.estimate) {
+      const e = await navigator.storage.estimate();
+      if (e && e.quota && e.usage / e.quota > 0.9) toast('Device storage is almost full. Free space or back up soon.', 'warning', 8000);
+    }
+  } catch (e) {}
+}
+
+/* ═══════════════ SUPPLY NAMES ═══════════════ */
+let supplyNames = [];                      // [{id,name,key}]
+let activeSupply = { id: '', name: '' };   // confirmed supply name used for incoming stock (optional)
+
+async function supplyLoadSelection() {
+  const s = await dbGet('settings', 'supplySelection');
+  if (s && s.name) activeSupply = { id: s.id || '', name: s.name };
+  await supplyLoadNames();
+  if (activeSupply.name && !supplyNames.some(function(n) { return n.id === activeSupply.id; })) activeSupply = { id: '', name: '' };
+}
+async function supplyLoadNames() {
+  supplyNames = (await dbAll('supplyNames')).sort(function(a, b) { return String(a.name).localeCompare(String(b.name)); });
+}
+function supplyRenderSelect() {
+  let h = '<option value="">— No supply name —</option>';
+  supplyNames.forEach(function(n) { h += '<option value="' + esc(n.id) + '"' + (n.id === activeSupply.id ? ' selected' : '') + '>' + esc(n.name) + '</option>'; });
+  $('#srNameSelect').html(h);
+  $('#srActive').text(activeSupply.name ? 'Confirmed supply name: ' + activeSupply.name : 'No supply name confirmed (optional).');
+  supplyHintUpdate();
+}
+function supplyHintUpdate() {
+  const e = document.getElementById('itemSupplyHint'); if (!e) return;
+  if (activeSupply.name) { e.style.display = 'block'; e.textContent = 'Incoming stock will be recorded under supply name: ' + activeSupply.name; }
+  else e.style.display = 'none';
+}
+async function saveSupplyName() {
+  const name = cleanName($('#srNameInput').val());
+  if (!name) { toast('Enter a supply name.', 'warning'); return; }
+  if (supplyNames.some(function(n) { return n.key === normName(name); })) { toast('That supply name already exists.', 'warning'); return; }
+  try {
+    await dbPut('supplyNames', { id: uuid(), name: name, key: normName(name), created: Date.now(), bizId: ekbBizId() });
+    $('#srNameInput').val(''); await supplyLoadNames(); supplyRenderSelect(); toast('Supply name saved', 'success');
+  } catch (e) { console.error(e); toast(dbErrMsg(e, 'Could not save supply name'), 'error', 6000); }
+}
+function askText(title, value) {
+  if (typeof Swal.mixin === 'function') {
+    return Swal.fire({ title: title, input: 'text', inputValue: value || '', showCancelButton: true, confirmButtonColor: '#09874a' })
+      .then(function(r) { return r.isConfirmed ? String(r.value || '') : null; });
+  }
+  const v = window.prompt(title, value || ''); return Promise.resolve(v === null ? null : v);
+}
+async function editSupplyName() {
+  const id = $('#srNameSelect').val(); const cur = supplyNames.find(function(n) { return n.id === id; });
+  if (!cur) { toast('Select a supply name to edit.', 'warning'); return; }
+  const v = await askText('Edit supply name', cur.name); if (v === null) return;
+  const name = cleanName(v); if (!name) { toast('Name cannot be empty.', 'warning'); return; }
+  if (supplyNames.some(function(n) { return n.id !== id && n.key === normName(name); })) { toast('That supply name already exists.', 'warning'); return; }
+  try {
+    await dbPut('supplyNames', Object.assign({}, cur, { name: name, key: normName(name) }));   // history keeps its own copy of the old name
+    if (activeSupply.id === id) { activeSupply = { id: id, name: name }; await dbPut('settings', { key: 'supplySelection', id: id, name: name }); }
+    await supplyLoadNames(); supplyRenderSelect(); toast('Supply name updated. Past records are unchanged.', 'success', 4000);
+  } catch (e) { console.error(e); toast(dbErrMsg(e, 'Could not update supply name'), 'error', 6000); }
+}
+async function deleteSupplyName() {
+  const id = $('#srNameSelect').val(); const cur = supplyNames.find(function(n) { return n.id === id; });
+  if (!cur) { toast('Select a supply name to delete.', 'warning'); return; }
+  const r = await Swal.fire({ title: 'Delete "' + cur.name + '"?', text: 'Past supply records keep this name.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33' });
+  if (!r || !r.isConfirmed) return;
+  try {
+    await dbDelete('supplyNames', id);
+    if (activeSupply.id === id) { activeSupply = { id: '', name: '' }; await dbPut('settings', { key: 'supplySelection', id: '', name: '' }); }
+    await supplyLoadNames(); supplyRenderSelect(); toast('Supply name deleted', 'success');
+  } catch (e) { console.error(e); toast(dbErrMsg(e, 'Could not delete supply name'), 'error', 6000); }
+}
+async function confirmSupplyName() {
+  const id = $('#srNameSelect').val(); const cur = supplyNames.find(function(n) { return n.id === id; });
+  activeSupply = cur ? { id: cur.id, name: cur.name } : { id: '', name: '' };
+  try { await dbPut('settings', { key: 'supplySelection', id: activeSupply.id, name: activeSupply.name }); } catch (e) { console.error(e); }
+  supplyRenderSelect(); toast(cur ? 'Supply name confirmed: ' + cur.name : 'Supply name cleared', 'success', 2500);
+}
+
+/* ═══════════════ SUPPLY RECORD PAGE ═══════════════ */
+let _srDays = [], _srShown = 0;
+async function supplyOpen() {
+  try {
+    await supplyLoadNames(); supplyRenderSelect();
+    fillMonthSelect('#srMonth'); await fillYearSelect('#srYear', 'supplies');
+    await supplyRefresh();
+  } catch (e) { console.error(e); toast('Could not load supply records', 'error'); }
+}
+/* One pass over the selected year: yearly total + 12 monthly totals, without keeping records in memory. */
+function supplyYearAggregate(y) {
+  return new Promise(function(resolve, reject) {
+    const months = new Array(12).fill(0); let total = 0;
+    const req = dbTx('supplies', 'readonly').objectStore('supplies').index('date').openCursor(yearRange(y));
+    req.onsuccess = function() {
+      const c = req.result; if (!c) { resolve({ total: total, months: months }); return; }
+      const v = c.value, t = Number(v.total) || 0, m = parseInt(String(v.date).slice(5, 7), 10) - 1;
+      total += t; if (m >= 0 && m < 12) months[m] += t; c.continue();
+    };
+    req.onerror = function() { reject(req.error); };
+  });
+}
+function supplyMonthRecords(y, m) {
+  return new Promise(function(resolve, reject) {
+    const out = [];
+    const req = dbTx('supplies', 'readonly').objectStore('supplies').index('date').openCursor(monthRange(y, m));
+    req.onsuccess = function() { const c = req.result; if (!c) { resolve(out); return; } out.push(c.value); c.continue(); };
+    req.onerror = function() { reject(req.error); };
+  });
+}
+async function supplyRefresh() {
+  const y = $('#srYear').val(), m = $('#srMonth').val();
+  const [agg, recs] = await Promise.all([supplyYearAggregate(y), supplyMonthRecords(y, m)]);
+  $('#srMonthTotal').text(money(agg.months[+m])); $('#srYearTotal').text(money(agg.total));
+  $('#srMonthLabel').text(MONTH_NAMES[+m] + ' ' + y); $('#srYearLabel').text(y);
+  $('#srMonthsList').html(agg.months.map(function(t, i) { return '<span class="sr-chip' + (i === +m ? ' on' : '') + '">' + MONTH_NAMES[i].slice(0, 3) + ': ' + money(t) + '</span>'; }).join(''));
+  const byDate = {};
+  recs.forEach(function(r) { (byDate[r.date] = byDate[r.date] || []).push(r); });
+  _srDays = Object.keys(byDate).sort().reverse().map(function(d) { return { date: d, rows: byDate[d] }; });
+  _srShown = 0; $('#srList').html(''); supplyShowMore();
+}
+function supplyShowMore() {
+  const next = _srDays.slice(_srShown, _srShown + 20); _srShown += next.length;
+  let html = '';
+  next.forEach(function(day) {
+    const groups = {};
+    day.rows.forEach(function(r) { const k = r.supplyName || ''; (groups[k] = groups[k] || []).push(r); });
+    const dayTotal = day.rows.reduce(function(a, r) { return a + (Number(r.total) || 0); }, 0);
+    html += '<div class="grouped-date-block"><div class="grouped-date-header"><span class="grouped-date-title">' + esc(day.date) + '</span><span class="grouped-date-stats"><span class="grouped-date-sales">Daily Total: ' + money(dayTotal) + '</span></span></div>';
+    Object.keys(groups).sort().forEach(function(name) {
+      const rows = groups[name]; let q = 0, t = 0, body = '';
+      rows.sort(function(a, b) { return (a.ts || 0) - (b.ts || 0); }).forEach(function(r) {
+        q += Number(r.qty) || 0; t += Number(r.total) || 0;
+        body += '<tr><td>' + esc(r.itemName) + '</td><td>' + money(r.qty) + '</td><td>' + money(r.costPrice) + '</td><td>' + money(r.total) + '</td></tr>';
+      });
+      html += '<div class="grouped-sales-block"><div class="grouped-sales-header"><strong>' + esc(name || 'No supply name') + '</strong></div><div style="overflow-x:auto"><table><thead><tr><th>Item Name</th><th>Stock Qty</th><th>Cost Price</th><th>Total</th></tr></thead><tbody>' + body +
+        '<tr style="font-weight:bold;background:#f8fafc"><td>Total</td><td>' + money(q) + '</td><td></td><td>' + money(t) + '</td></tr></tbody></table></div></div>';
+    });
+    html += '</div>';
+  });
+  if (_srShown === 0 && !_srDays.length) html = '<p style="color:#94a3b8;padding:8px 0;font-size:12px">No supply records for this month.</p>';
+  $('#srList').append(html);
+  $('#srMore').toggle(_srShown < _srDays.length);
+}
+
+/* ═══════════════ ANALYSIS ═══════════════ */
+let analysisData = null;
+async function analysisOpen() {
+  fillMonthSelect('#anMonth'); await fillYearSelect('#anYear', 'sales');
+  await analysisRun();
+}
+function analysisCompute(y, m) {
+  return new Promise(function(resolve, reject) {
+    const map = {}; let overall = 0, overallProfit = 0, qtyAll = 0, profitUnknown = 0;
+    const req = dbTx('sales', 'readonly').objectStore('sales').index('date').openCursor(monthRange(y, m));
+    req.onsuccess = function() {
+      const c = req.result;
+      if (!c) {
+        const rows = Object.keys(map).map(function(k) { return map[k]; });
+        rows.sort(function(a, b) { return b.qty - a.qty || b.total - a.total || String(a.name).localeCompare(String(b.name)); });
+        const n = rows.length;
+        rows.forEach(function(r, i) {
+          r.pct = overall > 0 ? r.total / overall * 100 : 0;
+          r.cls = i < Math.ceil(n * 0.2) ? 'Top selling' : i < Math.ceil(n * 0.5) ? 'Regular' : i < Math.ceil(n * 0.8) ? 'Low selling' : 'Very low';
+        });
+        resolve({ year: y, month: m, rows: rows, totals: { qty: qtyAll, sales: overall, profit: overallProfit, products: n, profitUnknown: profitUnknown } });
+        return;
+      }
+      const r = c.value, qty = Number(r.qty), tot = Number(r.total);
+      if (isFinite(qty) && isFinite(tot)) {
+        const key = r.itemId || ('n:' + normName(r.itemName));
+        const o = map[key] || (map[key] = { key: key, name: r.itemName || '(unnamed)', qty: 0, total: 0, profit: 0, profitLines: 0, lines: 0 });
+        o.qty += qty; o.total += tot; o.lines++; qtyAll += qty; overall += tot;
+        const p = r.profit === null || r.profit === undefined || r.profit === '' ? NaN : Number(r.profit);   // stored at sale time (uses that day's cost)
+        if (isFinite(p)) { o.profit += p; o.profitLines++; overallProfit += p; } else profitUnknown++;
+      }
+      c.continue();
+    };
+    req.onerror = function() { reject(req.error); };
+  });
+}
+async function analysisRun() {
+  try { analysisData = await analysisCompute($('#anYear').val(), $('#anMonth').val()); analysisRender(analysisData); }
+  catch (e) { console.error(e); toast('Could not load analysis', 'error'); }
+}
+function analysisRender(d) {
+  const t = d.totals;
+  $('#anTotQty').text(money(t.qty)); $('#anTotSales').text(money(t.sales)); $('#anTotProfit').text(money(t.profit)); $('#anTotProducts').text(t.products);
+  $('#anNote').text(t.profitUnknown ? t.profitUnknown + ' sale line(s) have no stored cost, so their profit is not counted ("N/A" / "*").' : '');
+  let h = '';
+  d.rows.forEach(function(r) {
+    const ps = r.profitLines === 0 ? 'N/A' : money(r.profit) + (r.profitLines < r.lines ? '*' : '');
+    h += '<tr><td>' + esc(r.name) + '<br><span class="an-badge an-' + r.cls.split(' ')[0].toLowerCase() + '">' + r.cls + '</span></td><td>' + money(r.qty) + '</td><td>' + money(r.total) + '</td><td>' + ps + '</td><td>' + r.pct.toFixed(2) + '%</td></tr>';
+  });
+  $('#anBody').html(h || '<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:16px">No completed sales for this period</td></tr>');
+  const max = d.rows.length ? d.rows[0].qty : 0;
+  $('#anChart').html(d.rows.map(function(r) {
+    const w = max > 0 ? Math.max(2, r.qty / max * 100) : 0;
+    return '<div class="an-bar-row" title="' + esc(r.name) + ': ' + money(r.qty) + ' sold, KSH ' + money(r.total) + '"><div class="an-bar-name">' + esc(r.name) + '</div><div class="an-bar-track"><div class="an-bar an-f-' + r.cls.split(' ')[0].toLowerCase() + '" style="width:' + w + '%"></div></div><div class="an-bar-val">' + money(r.qty) + '</div></div>';
+  }).join('') || '<p style="color:#94a3b8;font-size:12px">No data to chart.</p>');
+}
+
+/* ═══════════════ PRINTING ═══════════════ */
+let printSettings = { key: 'printSettings', paper: 'A4', method: 'browser', auto: true };
+let _ptBt = null, _ptUsb = null;     // { dev, char } / { dev, ep }
+async function ptLoadSettings() { const s = await dbGet('settings', 'printSettings'); if (s) printSettings = Object.assign(printSettings, s, { key: 'printSettings' }); }
+function ptFillUi() {
+  $('#ptPaper').val(printSettings.paper); $('#ptMethod').val(printSettings.method); $('#ptAuto').prop('checked', !!printSettings.auto); ptStatus();
+}
+async function ptSave() {
+  printSettings = { key: 'printSettings', paper: $('#ptPaper').val(), method: $('#ptMethod').val(), auto: $('#ptAuto').is(':checked') };
+  try { await dbPut('settings', printSettings); toast('Printer settings saved', 'success'); } catch (e) { toast(dbErrMsg(e, 'Could not save printer settings'), 'error'); }
+  ptStatus();
+}
+function ptStatus() {
+  const m = $('#ptMethod').val() || printSettings.method; let t;
+  if (m === 'bluetooth') t = !navigator.bluetooth ? 'Web Bluetooth is not available in this browser (use Chrome or Edge on Android/Windows). Use the print dialog instead.' : (_ptBt ? 'Connected: ' + (_ptBt.dev.name || 'Bluetooth printer') : 'Not connected. Tap Connect.');
+  else if (m === 'usb') t = !navigator.usb ? 'WebUSB is not available in this browser (use Chrome or Edge on a computer). Use the print dialog instead.' : (_ptUsb ? 'Connected: ' + (_ptUsb.dev.productName || 'USB printer') : 'Not connected. Tap Connect.');
+  else t = 'Uses the device print dialog. Works with any printer the phone or computer can print to (USB, Bluetooth, Wi-Fi, LAN, thermal, inkjet, laser).';
+  $('#ptStatus').text(t); $('#ptConnectBtn').toggle(m !== 'browser');
+}
+const BT_SERVICES = ['000018f0-0000-1000-8000-00805f9b34fb', '0000ffe0-0000-1000-8000-00805f9b34fb', 'e7810a71-73ae-499d-8c15-faa9aef0c3f2', '49535343-fe7d-4ae5-8fa9-9fafd205e455', '0000fff0-0000-1000-8000-00805f9b34fb', '0000ff00-0000-1000-8000-00805f9b34fb'];
+async function ptConnect() {
+  const m = $('#ptMethod').val();
+  try {
+    if (m === 'bluetooth') {
+      if (!navigator.bluetooth) throw Error('Web Bluetooth is not supported here.');
+      const dev = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: BT_SERVICES });
+      const server = await dev.gatt.connect(); let ch = null;
+      const svcs = await server.getPrimaryServices();
+      for (const s of svcs) { const cs = await s.getCharacteristics(); ch = cs.find(function(c) { return c.properties.write || c.properties.writeWithoutResponse; }); if (ch) break; }
+      if (!ch) throw Error('No writable printer channel found on this device.');
+      _ptBt = { dev: dev, char: ch };
+      dev.addEventListener('gattserverdisconnected', function() { _ptBt = null; ptStatus(); });
+    } else if (m === 'usb') {
+      if (!navigator.usb) throw Error('WebUSB is not supported here.');
+      await ptUsbOpen(await navigator.usb.requestDevice({ filters: [] }));
+    }
+    toast('Printer connected', 'success'); ptStatus();
+  } catch (e) { toast(e && e.message ? e.message : 'Could not connect printer', 'error', 6000); ptStatus(); }
+}
+async function ptUsbOpen(dev) {
+  await dev.open(); if (!dev.configuration) await dev.selectConfiguration(1);
+  let pick = null;
+  dev.configuration.interfaces.forEach(function(i) {
+    i.alternates.forEach(function(a) {
+      const ep = a.endpoints.find(function(e) { return e.direction === 'out' && e.type === 'bulk'; });
+      if (ep && (!pick || a.interfaceClass === 7)) pick = { num: i.interfaceNumber, ep: ep.endpointNumber };
+    });
+  });
+  if (!pick) throw Error('No printer output channel found on this USB device.');
+  await dev.claimInterface(pick.num); _ptUsb = { dev: dev, ep: pick.ep };
+}
+async function ptTryReconnectUsb() {
+  if (printSettings.method !== 'usb' || !navigator.usb) return;
+  try { const l = await navigator.usb.getDevices(); if (l.length) { await ptUsbOpen(l[0]); ptStatus(); } } catch (e) {}
+}
+async function ptSendBytes(bytes) {
+  if (printSettings.method === 'bluetooth' && _ptBt) {
+    const c = _ptBt.char;
+    for (let i = 0; i < bytes.length; i += 100) {
+      const part = bytes.slice(i, i + 100);
+      if (c.properties.writeWithoutResponse && c.writeValueWithoutResponse) await c.writeValueWithoutResponse(part); else await c.writeValue(part);
+      await new Promise(function(r) { setTimeout(r, 25); });
+    }
+    return true;
+  }
+  if (printSettings.method === 'usb' && _ptUsb) {
+    for (let i = 0; i < bytes.length; i += 4096) await _ptUsb.dev.transferOut(_ptUsb.ep, bytes.slice(i, i + 4096));
+    return true;
+  }
+  return false;
+}
+function asciiText(s) { return String(s == null ? '' : s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\x20-\x7E]/g, '?'); }
+function escposReceipt(res, width) {
+  const s = bizSettings, L = [], bytes = [];
+  const line = function(t) { L.push(asciiText(t)); };
+  const two = function(a, b) { a = asciiText(a); b = asciiText(b); const sp = Math.max(1, width - a.length - b.length); return a + ' '.repeat(sp) + b; };
+  const wrap = function(t) { t = asciiText(t); const o = []; while (t.length > width) { o.push(t.slice(0, width)); t = t.slice(width); } o.push(t); return o; };
+  const centered = [], enc = new TextEncoder();
+  const push = function(arr) { arr.forEach(function(b) { bytes.push(b); }); };
+  const text = function(t) { push(Array.from(enc.encode(asciiText(t) + '\n'))); };
+  push([0x1B, 0x40]);                                                   // initialise
+  push([0x1B, 0x61, 1]); push([0x1B, 0x45, 1]); text(s.name || 'Ekambani'); push([0x1B, 0x45, 0]);
+  if (s.address) text(s.address); if (s.phone) text(s.phone);
+  text('-'.repeat(width)); text('INVOICE: ' + res.invoice);
+  push([0x1B, 0x61, 0]);
+  text('Customer: ' + (res.data.customerName || '-')); if (res.data.customerPhone) text('Phone: ' + res.data.customerPhone);
+  text('-'.repeat(width));
+  let total = 0;
+  res.data.items.forEach(function(i) {
+    wrap(i.itemName).forEach(text);
+    text(two('  ' + i.qty + ' x ' + Number(i.price).toLocaleString('en-US'), Number(i.total).toLocaleString('en-US')));
+    total += Number(i.total);
+  });
+  text('-'.repeat(width)); push([0x1B, 0x45, 1]); text(two('TOTAL KSH', total.toLocaleString('en-US'))); push([0x1B, 0x45, 0]);
+  const imei = [res.data.imei1, res.data.imei2, res.data.imei3].filter(Boolean).join(' | '); if (imei) wrap('IMEI: ' + imei).forEach(text);
+  text('Payment: ' + (res.data.paymentMethod || '-'));
+  const by = res.data.salesBy !== undefined && res.data.salesBy !== null ? res.data.salesBy : s.soldBy; text('Sales by: ' + (by || '-'));
+  if (s.desc) { push([0x1B, 0x61, 1]); wrap(s.desc).forEach(text); }
+  push([0x1B, 0x64, 4]); push([0x1D, 0x56, 0x42, 0x00]);                // feed + partial cut (ignored by printers without a cutter)
+  return new Uint8Array(bytes);
+}
+function receiptHtml(res, mm) {
+  const s = bizSettings, w = mm === 58 ? '54mm' : '76mm', fs = mm === 58 ? '11px' : '12px';
+  const rows = res.data.items.map(function(i) { return '<tr><td colspan="2">' + esc(i.itemName) + '</td></tr><tr><td>' + i.qty + ' x ' + Number(i.price).toLocaleString() + '</td><td style="text-align:right">' + Number(i.total).toLocaleString() + '</td></tr>'; }).join('');
+  const total = res.data.items.reduce(function(a, b) { return a + Number(b.total); }, 0);
+  const imei = [res.data.imei1, res.data.imei2, res.data.imei3].filter(Boolean).map(esc).join(' | ');
+  const by = res.data.salesBy !== undefined && res.data.salesBy !== null ? res.data.salesBy : s.soldBy;
+  return '<html><head><meta charset="utf-8"><style>@page{size:' + (mm === 58 ? '58mm' : '80mm') + ' auto;margin:2mm}body{width:' + w + ';margin:0 auto;font-family:monospace;font-size:' + fs + ';color:#000}h3,p{margin:2px 0;text-align:center}table{width:100%;border-collapse:collapse}td{padding:1px 0;vertical-align:top}hr{border:0;border-top:1px dashed #000;margin:4px 0}</style></head><body>' +
+    (s.logo ? '<p><img src="' + esc(s.logo) + '" style="max-width:40mm"></p>' : '') + '<h3>' + esc(s.name || 'Ekambani') + '</h3><p>' + esc(s.address) + '<br>' + esc(s.phone) + '</p><hr><p><b>INVOICE: ' + esc(res.invoice) + '</b></p><p>Customer: ' + (esc(res.data.customerName) || '-') + '</p><hr>' +
+    '<table>' + rows + '</table><hr><table><tr><td><b>TOTAL KSH</b></td><td style="text-align:right"><b>' + total.toLocaleString() + '</b></td></tr></table>' +
+    (imei ? '<p style="text-align:left">IMEI: ' + imei + '</p>' : '') + '<p style="text-align:left">Payment: ' + (esc(res.data.paymentMethod) || '-') + '<br>Sales by: ' + (esc(by) || '-') + '</p>' + (s.desc ? '<hr><p>' + esc(s.desc) + '</p>' : '') + '</body></html>';
+}
+function docHtml(res, size) {
+  const s = bizSettings;
+  const ih = res.data.items.map(function(i) { return '<tr><td>' + esc(i.itemName) + '</td><td>' + i.qty + '</td><td>' + Number(i.price).toLocaleString() + '</td><td>' + Number(i.total).toLocaleString() + '</td></tr>'; }).join('');
+  const total = res.data.items.reduce(function(a, b) { return a + Number(b.total); }, 0);
+  const imei = [res.data.imei1, res.data.imei2, res.data.imei3].filter(Boolean).map(esc).join(' | ');
+  const by = res.data.salesBy !== undefined && res.data.salesBy !== null ? res.data.salesBy : s.soldBy;
+  return '<html><head><meta charset="utf-8"><style>@page{size:' + size + ';margin:12mm}body{font-family:sans-serif;padding:10px}.header{text-align:center}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px}</style></head><body><div class="header">' +
+    (s.logo ? '<img src="' + esc(s.logo) + '" style="max-width:80px"><br>' : '') + '<h2>' + esc(s.name || 'Ekambani') + '</h2><p>' + esc(s.address) + '<br>' + esc(s.phone) + '</p><hr><h3>INVOICE: ' + esc(res.invoice) + '</h3><p>Customer: ' + (esc(res.data.customerName) || '-') + ' &nbsp;|&nbsp; Phone: ' + (esc(res.data.customerPhone) || '-') + '</p></div>' +
+    '<table><thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead><tbody>' + ih + '</tbody></table><h3 style="text-align:right">Total: KSH ' + total.toLocaleString() + '</h3>' +
+    (imei ? '<p><strong>IMEI:</strong> ' + imei + '</p>' : '') + '<p><strong>Payment:</strong> ' + (esc(res.data.paymentMethod) || '-') + '</p><p><strong>Sales By:</strong> ' + (esc(by) || '-') + '</p>' + (s.desc ? '<p style="text-align:center;font-size:12px;color:#555">' + esc(s.desc) + '</p>' : '') + '</body></html>';
+}
+function printHtml(html) {
+  const w = window.open('', '', 'width=800,height=600');
+  if (w) { w.document.write(html); w.document.close(); setTimeout(function() { try { w.focus(); w.print(); } catch (e) {} }, 500); return; }
+  const f = document.createElement('iframe'); f.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0';
+  document.body.appendChild(f); f.contentDocument.open(); f.contentDocument.write(html); f.contentDocument.close();
+  setTimeout(function() { try { f.contentWindow.focus(); f.contentWindow.print(); } catch (e) { toast('Allow pop-ups to print the invoice', 'warning', 5000); } setTimeout(function() { f.remove(); }, 3000); }, 500);
+}
+(function() {
+  const _orig = printInvoice;     // the original A4 printing stays exactly as it was
+  printInvoice = async function(res) {
+    try {
+      if (res && res.__auto && printSettings.auto === false) return;
+      const direct = (printSettings.method === 'bluetooth' && _ptBt) || (printSettings.method === 'usb' && _ptUsb);
+      if (direct) {
+        try { if (await ptSendBytes(escposReceipt(res, printSettings.paper === '58' ? 32 : 48))) return; }
+        catch (e) { console.warn(e); toast('Direct printing failed. Using the print dialog.', 'warning', 5000); }
+      } else if (printSettings.method !== 'browser') {
+        toast('Printer not connected. Using the print dialog.', 'info', 3500);
+      }
+      const p = printSettings.paper;
+      if (p === '58' || p === '80') { printHtml(receiptHtml(res, +p)); return; }
+      if (p === 'A5') { printHtml(docHtml(res, 'A5')); return; }
+      if (p === 'Letter') { printHtml(docHtml(res, 'letter')); return; }
+      _orig(res);
+    } catch (e) { console.error(e); _orig(res); }
+  };
+})();
+function ptTest() {
+  printInvoice({ invoice: 'TEST-PRINT', data: { customerName: 'Test', customerPhone: '', paymentMethod: 'KSH', salesBy: bizSettings.soldBy || '', items: [{ itemName: 'Sample item', qty: 2, price: 150, total: 300 }, { itemName: 'Another sample item with a long name', qty: 1, price: 75, total: 75 }] } });
+}
+
+/* ── item form: show the confirmed supply name (read-only hint) ── */
+(function() {
+  const _open = openModal, _edit = editItem;
+  openModal = function() { _open(); supplyHintUpdate(); };
+  editItem = function(id) { _edit(id); supplyHintUpdate(); };
+})();
+
+/* ═══════════════ EXTERNAL BARCODE SCANNERS (USB / Bluetooth / wireless HID) ═══════════════
+   These scanners behave like a very fast keyboard that ends with Enter. A burst of keys with tiny gaps is treated as a scan;
+   normal typing is never touched. The existing camera scanner is unchanged. Both use the same 'items' store (barcode index). */
+(function() {
+  let buf = '', last = 0, gaps = [], snapshot = null, target = null, lastCode = '', lastCodeAt = 0;
+  const FIELD_IGNORE = ['itemBarcode', 'imei1', 'imei2', 'imei3', 'scannerManualInput'];   // these fields already receive scans as typed text
+  function reset() { buf = ''; gaps = []; snapshot = null; target = null; }
+  document.addEventListener('keydown', function(e) {
+    if (!$('#salesView').hasClass('active') || $('.modal:visible').length || $('#scannerOverlay').hasClass('open')) { reset(); return; }
+    if (e.ctrlKey || e.altKey || e.metaKey) return;
+    const el = e.target, id = el && el.id;
+    if (id && FIELD_IGNORE.indexOf(id) !== -1) return;
+    const now = Date.now();
+    if (e.key === 'Enter') {
+      const avg = gaps.length ? gaps.reduce(function(a, b) { return a + b; }, 0) / gaps.length : 999;
+      if (buf.length >= 3 && avg <= 45) {
+        e.preventDefault(); e.stopPropagation();
+        if (target && snapshot !== null && 'value' in target) target.value = snapshot;   // remove the characters the scanner typed
+        const code = buf; reset(); externalScan(code); return;
+      }
+      reset(); return;
+    }
+    if (e.key.length !== 1) return;
+    if (now - last > 120 || !buf) { buf = ''; gaps = []; target = el; snapshot = el && 'value' in el ? el.value : null; }
+    else gaps.push(now - last);
+    buf += e.key; last = now;
+  }, true);
+
+  async function externalScan(code) {
+    const now = Date.now();
+    if (code === lastCode && now - lastCodeAt < 250) return;      // ignore an accidental double read of the same label
+    lastCode = code; lastCodeAt = now;
+    let found = null;
+    try {
+      found = await new Promise(function(res, rej) { const r = dbTx('items', 'readonly').objectStore('items').index('barcode').getAll(code); r.onsuccess = function() { res(r.result && r.result[0]); }; r.onerror = function() { rej(r.error); }; });
+    } catch (e) { found = inventory.find(function(i) { return (i.barcode || '') === code; }); }
+    if (!found) { toast('No item found with barcode "' + code + '"', 'warning', 4500); return; }
+    const live = inventory.find(function(i) { return i.id === found.id; }) || found;
+    const avail = Number(live.stock);
+    if (avail <= 0) { toast('"' + live.itemName + '" is out of stock', 'error', 4000); return; }
+    const inCart = cart.filter(function(c) { return c.id === live.id; }).reduce(function(a, b) { return a + b.qty; }, 0);
+    if (inCart + 1 > avail) { toast('Only ' + avail + ' unit(s) available for "' + live.itemName + '"', 'warning'); return; }
+    const line = cart.find(function(c) { return c.id === live.id && Number(c.price) === Number(live.sellPrice); });
+    if (line) { line.qty += 1; line.total = line.qty * line.price; }
+    else cart.push({ id: live.id, itemName: live.itemName, qty: 1, price: Number(live.sellPrice), total: Number(live.sellPrice) });
+    renderCart(); toast(live.itemName + ' added (' + (line ? line.qty : 1) + ')', 'success', 1200);
+  }
+})();
+
 </script>
 </body>
 </html>
